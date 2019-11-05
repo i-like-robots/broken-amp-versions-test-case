@@ -11,22 +11,22 @@ We had access to two users able to consistently recreate the issue and enable us
 Render timeout waiting for service amp-subscription to be ready.
 ```
 
-After confirming that the JavaScript was being loaded by the browser we began to search the [AMP source code][2] to find the source of this error and create an outline of the mechanism which registers AMP extensions on the page.
+After confirming that the JavaScript was being loaded in each browser we began to search the [AMP source code][2] to find the source of this error and create an outline of the mechanism which registers AMP extensions on the page.
 
-This error message is logged when an extension fails to register within 8 seconds (see [here][3]).
+This error message itself is logged when an extension fails to register itself within 8 seconds (see [here][3]).
 
-By adding breakpoints to the `amp-subscription` extension we deduced that it was not being registered via `AMP.registerServiceForDoc()` and therefore not being initialised.
+By adding breakpoints to the `amp-subscription-0.1.js` script we deduced that it was not being registered via `AMP.registerServiceForDoc()` and therefore not being initialised.
 
-Adding breakpoints to the `.waitForExtension()` method revealed that it was being called for the `amp-subscriptions` extension but the promise returned for it never resolved.
+Adding breakpoints to the `.waitForExtension()` method within the AMP runtime revealed that it was being called for the `amp-subscriptions` extension but the promise returned for it never resolved.
 
-Whilst investigating we happened to notice that the version (added by [this wrapper][4]) reported by the `amp-subscriptions` extension was different to that of the runtime and other extensions.
+Whilst investigating we happened to notice that the version (added by [this wrapper][4]) reported by the `amp-subscriptions` extension was different to that of the runtime (`window.AMP_CONFIG.v`) and other extensions.
 
 By updating this version number to the same one used by the runtime the extension was able to load correctly.
 
 
 ## Test case
 
-The files in this repo demonstrate that the version defined by the `amp-subscriptions` extension wrapper can prevent the extension from being registered and initialised if it is different to the version reported by the AMP runtime and result in no content being shown.
+The files in this repo demonstrate that the version defined by the `amp-subscriptions` extension wrapper can prevent the extension from being registered and initialised if it is different to the one reported by the AMP runtime and result in no content being shown.
 
 The only difference between `expected.html` and `broken.html` is that `broken.html` is loading an outdated version of the `amp-subscriptions` extension. The only difference between `amp-subscriptions-0.1.js` and `amp-subscriptions-0.1-outdated.js` is the version number.
 
