@@ -23,6 +23,8 @@ Whilst investigating we happened to notice that the version (added by [this wrap
 
 By updating this version number to the same one used by the runtime the extension was able to load correctly.
 
+As we are not able to control the behaviour of the AMP CDN nor ensure that the scripts loaded by our users are all of the same version I believe we are not able to resolve this problem ourselves.
+
 
 ## Test case
 
